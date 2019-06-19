@@ -17,8 +17,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private final static int RESULT_CAMERA = 1001;
     private final static int REQUEST_PERMISSION = 1002;
 
-    private ImageView imageView;
+    private VideoView videoView;
     private Uri cameraUri;
     private String filePath;
 
@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d("debug","onCreate()");
         setContentView(R.layout.activity_main);
 
-        imageView = findViewById(R.id.image_view);
+        videoView = findViewById(R.id.video_view);
 
         Button cameraButton = findViewById(R.id.camera_button);
         cameraButton.setOnClickListener(new View.OnClickListener() {
@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
                 getApplicationContext().getPackageName() + ".fileprovider",
                 cameraFile);
 
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraUri);
         startActivityForResult(intent, RESULT_CAMERA);
 
@@ -96,9 +96,11 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == RESULT_CAMERA) {
 
             if(cameraUri != null){
-                imageView.setImageURI(cameraUri);
+                videoView.setVideoURI(cameraUri);
 
                 registerDatabase(filePath);
+                videoView.start();
+
             }
             else{
                 Log.d("debug","cameraUri == null");
@@ -110,10 +112,10 @@ public class MainActivity extends AppCompatActivity {
    private void registerDatabase(String file) {
         ContentValues contentValues = new ContentValues();
         ContentResolver contentResolver = MainActivity.this.getContentResolver();
-        contentValues.put(MediaStore.Images.Media.MIME_TYPE, "image/mpg");
+        contentValues.put(MediaStore.Video.Media.MIME_TYPE, "video/mpg");
         contentValues.put("_data", file);
         contentResolver.insert(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,contentValues);
+                MediaStore.Video.Media.EXTERNAL_CONTENT_URI,contentValues);
     }
 
     // Runtime Permission check
